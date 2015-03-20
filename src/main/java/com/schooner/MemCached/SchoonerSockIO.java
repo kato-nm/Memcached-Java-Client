@@ -36,6 +36,8 @@ import java.nio.channels.ByteChannel;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
 import com.whalin.MemCached.SockIOPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An adapter of com.danga.MemCached.SockIOPool.SockIO.
@@ -46,6 +48,8 @@ import com.whalin.MemCached.SockIOPool;
  * @see com.whalin.MemCached.SockIOPool.SockIO
  */
 public abstract class SchoonerSockIO extends SockIOPool.SockIO {
+	// logger
+	private static Logger log = LoggerFactory.getLogger(SchoonerSockIO.class);
 
 	protected GenericObjectPool sockets;
 
@@ -101,6 +105,9 @@ public abstract class SchoonerSockIO extends SockIOPool.SockIO {
 				line = this.readLine();
 			} while (!line.equals("END"));			
 		} catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage());
+            }
 			return false;
 		}
 		

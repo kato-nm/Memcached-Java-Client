@@ -19,3 +19,6 @@ memcached-release*
 /ocalCheckout=true
 /pom.xml.next
 /pom.xml.tag
+/build
+/report
+/.gradle

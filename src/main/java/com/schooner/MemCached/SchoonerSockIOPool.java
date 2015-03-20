@@ -212,6 +212,7 @@ public class SchoonerSockIOPool {
 	private int bufferSize = 1024 * 1025;
 
 	protected SchoonerSockIOPool(boolean isTcp) {
+        log.trace("++++ creating {} SchoonerSockIOPool", isTcp ? "TCP" : "UDP");
 		this.isTcp = isTcp;
 	}
 
@@ -232,7 +233,14 @@ public class SchoonerSockIOPool {
 			}
 		}
 
-		return pools.get(poolName);
+        // returns the pool iff the pool is for TCP connections.
+		pool = pools.get(poolName);
+        if (pool.isTcp()) {
+            return pool;
+        } else {
+            log.error("++++ failed to return SockIOPool:{}", poolName);
+            return null;
+        }
 	}
 
 	public static SchoonerSockIOPool getInstance(String poolName, AuthInfo authInfo) {
@@ -246,7 +254,14 @@ public class SchoonerSockIOPool {
 			}
 		}
 
-		return pools.get(poolName);
+        // returns the pool iff the pool is for TCP connections.
+		pool = pools.get(poolName);
+        if (pool.isTcp()) {
+            return pool;
+        } else {
+            log.error("++++ failed to return SockIOPool:{}", poolName);
+            return null;
+        }
 	}
 
 	public static SchoonerSockIOPool getInstance(String poolName, boolean isTcp) {
@@ -454,6 +469,12 @@ public class SchoonerSockIOPool {
 		return getSock(key, null);
 	}
 
+    public final SchoonerSockIO getSock(String key, Integer hashCode) {
+        SchoonerSockIO sock = _getSock(key, hashCode);
+
+        return sock;
+    }
+
 	/**
 	 * Returns appropriate SockIO object given string cache key and optional
 	 * hashcode.
@@ -467,7 +488,7 @@ public class SchoonerSockIOPool {
 	 *            if not null, then the int hashcode to use
 	 * @return SockIO obj connected to server
 	 */
-	public final SchoonerSockIO getSock(String key, Integer hashCode) {
+	private final SchoonerSockIO _getSock(String key, Integer hashCode) {
 
 		if (!this.initialized) {
 			if (log.isErrorEnabled())
@@ -524,6 +545,16 @@ public class SchoonerSockIOPool {
 		return null;
 	}
 
+    public final SchoonerSockIO getConnection(String host) {
+        SchoonerSockIO sock = _getConnection(host);
+        
+        if (sock == null) {
+            log.error("can not open a connection to {}", host);
+        }
+
+        return sock;
+    }
+
 	/**
 	 * Returns a SockIO object from the pool for the passed in host.
 	 * 
@@ -535,13 +566,15 @@ public class SchoonerSockIOPool {
 	 *            host from which to retrieve object
 	 * @return SockIO object or null if fail to retrieve one
 	 */
-	public final SchoonerSockIO getConnection(String host) {
+	private final SchoonerSockIO _getConnection(String host) {
 		if (!this.initialized) {
 			if (log.isErrorEnabled())
 				log.error("attempting to get SockIO from uninitialized pool!");
 			return null;
 		}
 
+        log.trace("+++++ attempting to get connection to host:{}", host);
+ 
 		if (host == null)
 			return null;
 
@@ -1219,6 +1252,10 @@ public class SchoonerSockIOPool {
 				UnknownHostException {
 			super(sockets, bufferSize);
 
+            log.trace("++++  host = {}", host);
+            log.trace("++++  bufferSize = {}", bufferSize);
+            log.trace("++++  timeout = {}", timeout);
+
 			String[] ip = host.split(":");
 			channel = DatagramChannel.open();
 			channel.configureBlocking(false);
@@ -1251,7 +1288,7 @@ public class SchoonerSockIOPool {
 		}
 
 		@Override
-		public byte[] getResponse(short rid) throws IOException {
+	public byte[] getResponse(short rid) throws IOException {
 
 			long timeout = 1000;
 			long timeRemaining = timeout;
@@ -1438,6 +1475,11 @@ public class SchoonerSockIOPool {
 				boolean noDelay) throws IOException, UnknownHostException {
 
 			super(sockets, bufferSize);
+
+            log.trace("++++  host = {}", host);
+            log.trace("++++  bufferSize = {}", bufferSize);
+            log.trace("++++  timeout = {}", timeout);
+            log.trace("++++  connectTimeout = {}", connectTimeout);
 
 			// allocate a new receive buffer
 			String[] ip = host.split(":");

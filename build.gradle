@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+
+group = 'com.whalin'
+version = '3.0.2'
+
+description = """Memcached-Java-Client"""
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+
+
+repositories {
+        
+     maven { url "http://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    compile group: 'commons-pool', name: 'commons-pool', version:'1.5.6'
+    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.6.4'
+    testCompile group: 'junit', name: 'junit', version:'4.6+'
+    testCompile group: 'com.thimbleware.jmemcached', name: 'jmemcached-core', version:'1.0.0'
+    compile(group: 'org.slf4j', name: 'slf4j-simple', version:'1.6.4') {
+       /* This dependency was originally in the Maven provided scope, but the project was not of type war.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       Please review and delete this closure when resolved. */
+    }
+}
+
+test { 
+  systemProperty 'memcached.host', 'localhsot:11211'
+}

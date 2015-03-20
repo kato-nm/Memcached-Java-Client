@@ -64,7 +64,7 @@ public class MemcachedClientUDPTest extends TestCase {
 		serverlist = servers.split(",");
 
 		// initialize the pool for memcache servers
-		SchoonerSockIOPool pool = SchoonerSockIOPool.getInstance("test", false);
+		SchoonerSockIOPool pool = SchoonerSockIOPool.getInstance("udp_test", false);
 		pool.setServers(serverlist);
 		pool.setNagle(false);
 		pool.setHashingAlg(SchoonerSockIOPool.CONSISTENT_HASH);
@@ -74,13 +74,13 @@ public class MemcachedClientUDPTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		mc = new MemCachedClient("test", false, false);
+		mc = new MemCachedClient("udp_test", false, false);
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		assertNotNull(mc);
-		mc.flushAll();
+        mc.flushAll();
 	}
 
 	public void testFlushAll() {

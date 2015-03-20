@@ -138,7 +138,7 @@ public class AscIIUDPClient extends MemCachedClient {
 		this.poolName = (this.poolName == null) ? "default" : this.poolName;
 
 		// get a pool instance to work with for the life of this instance
-		this.pool = SchoonerSockIOPool.getInstance(poolName);
+		this.pool = SchoonerSockIOPool.getInstance(poolName, false);
 	}
 
 	public boolean set(String key, Object value) {
