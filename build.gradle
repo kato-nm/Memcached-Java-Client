@@ -29,5 +29,5 @@ dependencies {
 }
 
 test { 
-  systemProperty 'memcached.host', 'localhsot:11211'
+  systemProperty 'memcached.host', memcachedHost
 }
